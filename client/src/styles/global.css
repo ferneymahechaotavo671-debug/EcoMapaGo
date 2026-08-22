@@ -1,0 +1,379 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI',sans-serif;
+}
+
+body{
+    background:#f4f7f5;
+    color:#1e293b;
+}
+
+/* SCROLL */
+
+::-webkit-scrollbar{
+    width:10px;
+}
+
+::-webkit-scrollbar-thumb{
+    background:#2e7d32;
+    border-radius:10px;
+}
+
+/* TITULOS */
+
+.page-title{
+    font-size:32px;
+    font-weight:700;
+    margin-bottom:30px;
+    color:#1b4332;
+}
+
+/* GRID */
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+    gap:25px;
+}
+
+/* CARDS */
+
+.card{
+
+    background:rgba(255,255,255,0.75);
+
+    backdrop-filter:blur(12px);
+
+    border:1px solid rgba(255,255,255,0.3);
+
+    border-radius:22px;
+
+    padding:25px;
+
+    box-shadow:
+        0 8px 30px rgba(0,0,0,0.08);
+
+    transition:0.3s;
+
+}
+
+.card:hover{
+    transform:translateY(-5px);
+
+    box-shadow:
+        0 10px 25px rgba(0,0,0,0.12);
+}
+
+/* BOTONES */
+
+button{
+    border:none;
+    cursor:pointer;
+    transition:0.3s;
+    font-weight:600;
+}
+
+button:hover{
+    transform:scale(1.03);
+}
+
+/* INPUTS */
+
+input,
+textarea,
+select{
+
+    width:100%;
+    padding:14px;
+    margin-top:12px;
+
+    border:none;
+
+    border-radius:14px;
+
+    background:#edf2f7;
+
+    outline:none;
+
+    font-size:15px;
+}
+
+textarea{
+    min-height:120px;
+    resize:none;
+}
+
+/* LINKS */
+
+a{
+    text-decoration:none;
+}
+
+/* ANIMACIONES */
+
+.fade-in{
+    animation:fade .5s ease;
+}
+
+@keyframes fade{
+
+    from{
+        opacity:0;
+        transform:translateY(15px);
+    }
+
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+
+}
+
+/* RESPONSIVE */
+
+@media(max-width:768px){
+
+    .page-title{
+        font-size:24px;
+    }
+
+}
+
+/* =========================
+   DASHBOARD LAYOUT
+========================= */
+
+.dashboard-layout{
+
+    display:flex;
+
+    min-height:100vh;
+
+    background:#f4f7f5;
+
+}
+
+.dashboard-content{
+
+    flex:1;
+
+    margin-left:260px;
+
+    padding:25px;
+
+    transition:0.3s;
+
+}
+
+/* HEADER */
+
+.dashboard-header{
+
+    margin-bottom:30px;
+
+}
+
+.dashboard-header h1{
+
+    font-size:34px;
+
+    color:#1b4332;
+
+    margin-bottom:8px;
+
+}
+
+.dashboard-header p{
+
+    color:#64748b;
+
+    font-size:16px;
+
+}
+
+/* STATS */
+
+.stats-grid{
+
+    display:grid;
+
+    grid-template-columns:
+    repeat(auto-fit,minmax(220px,1fr));
+
+    gap:20px;
+
+    margin-bottom:30px;
+
+}
+
+.stat-card{
+
+    background:white;
+
+    border-radius:22px;
+
+    padding:25px;
+
+    box-shadow:
+        0 4px 15px rgba(0,0,0,0.06);
+
+    transition:0.3s;
+
+}
+
+.stat-card:hover{
+
+    transform:translateY(-4px);
+
+    box-shadow:
+        0 10px 25px rgba(0,0,0,0.12);
+
+}
+
+.stat-card h2{
+
+    font-size:38px;
+
+    color:#1b4332;
+
+    margin-bottom:10px;
+
+}
+
+.stat-card span{
+
+    color:#64748b;
+
+    font-weight:600;
+
+}
+
+/* MAPA */
+
+.map-section{
+
+    background:white;
+
+    border-radius:22px;
+
+    padding:20px;
+
+    box-shadow:
+        0 4px 15px rgba(0,0,0,0.06);
+
+}
+
+.map-section h2{
+
+    margin-bottom:20px;
+
+    color:#1b4332;
+
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media(max-width:768px){
+
+    .dashboard-content{
+
+        margin-left:0;
+
+        padding:15px;
+
+        padding-top:85px;
+
+    }
+
+    .dashboard-header h1{
+
+        font-size:26px;
+
+    }
+
+    .stats-grid{
+
+        grid-template-columns:1fr;
+
+    }
+
+}
+
+/* FONDO GLOBAL */
+
+body::before{
+
+    content:'';
+
+    position:fixed;
+
+    inset:0;
+
+    background:url('../assets/logo.png')
+    center center no-repeat;
+
+    background-size:320px;
+
+    opacity:0.04;
+
+    z-index:-1;
+
+    filter:blur(1px);
+
+}
+
+/* =========================
+   EFECTO PREMIUM
+========================= */
+
+.card{
+
+    background:rgba(255,255,255,0.75);
+
+    backdrop-filter:blur(12px);
+
+    border:1px solid rgba(255,255,255,0.3);
+
+    border-radius:22px;
+
+    padding:25px;
+
+    box-shadow:
+        0 8px 30px rgba(0,0,0,0.08);
+
+    transition:0.3s;
+
+}
+
+.card:hover{
+
+    transform:translateY(-4px);
+
+}
+
+body::before{
+
+    content:'';
+
+    position:fixed;
+
+    inset:0;
+
+    background:url('../assets/logo.png')
+    center center no-repeat;
+
+    background-size:420px;
+
+    opacity:0.03;
+
+    z-index:-1;
+
+    filter:blur(2px);
+
+    pointer-events:none;
+
+}
