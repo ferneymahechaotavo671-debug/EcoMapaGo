@@ -20,19 +20,28 @@ function Sidebar() {
 
     return (
         <>
-            <button
-                className="sidebar-hamburguesa"
-                onClick={() => setAbierto(!abierto)}
-                aria-label="Abrir menú"
-            >
-                {abierto ? '✖' : '☰'}
-            </button>
+            {!abierto && (
+                <button
+                    className="sidebar-hamburguesa"
+                    onClick={() => setAbierto(true)}
+                    aria-label="Abrir menú"
+                >
+                    ☰
+                </button>
+            )}
 
             {abierto && <div className="sidebar-overlay" onClick={cerrarMenu}></div>}
 
             <div className={`sidebar ${abierto ? 'sidebar-abierta' : ''}`}>
                 <div className="sidebar-logo">
-                    🌍 EcoMapaGo
+                    <span>🌍 EcoMapaGo</span>
+                    <button
+                        className="sidebar-cerrar-btn"
+                        onClick={cerrarMenu}
+                        aria-label="Cerrar menú"
+                    >
+                        ✖
+                    </button>
                 </div>
 
                 <nav className="sidebar-nav">

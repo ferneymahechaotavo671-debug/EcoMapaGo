@@ -17,6 +17,14 @@
     font-weight: 700;
     color: #fff;
     border-bottom: 1px solid rgba(255,255,255,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.sidebar-cerrar-btn {
+    display: none;
 }
 
 .sidebar-nav {
@@ -113,7 +121,7 @@
         background: #1b4332;
         color: #fff;
         font-size: 20px;
-        z-index: 200;
+        z-index: 900;
         cursor: pointer;
         box-shadow: 0 3px 10px rgba(0,0,0,0.25);
     }
@@ -123,17 +131,32 @@
         position: fixed;
         inset: 0;
         background: rgba(0,0,0,0.45);
-        z-index: 150;
+        z-index: 1900;
     }
 
     .sidebar {
         transform: translateX(-100%);
         transition: transform 0.25s ease;
         width: 250px;
-        z-index: 180;
+        z-index: 2000;
     }
 
     .sidebar.sidebar-abierta {
         transform: translateX(0);
+    }
+
+    .sidebar-cerrar-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 34px;
+        height: 34px;
+        border: none;
+        border-radius: 8px;
+        background: rgba(255,255,255,0.15);
+        color: #fff;
+        font-size: 16px;
+        cursor: pointer;
+        flex-shrink: 0;
     }
 }

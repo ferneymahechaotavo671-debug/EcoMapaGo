@@ -31,16 +31,20 @@ class ReporteService:
             liberar(conexion)
 
     @staticmethod
-    def obtener_reportes(pagina=1, limite=20):
+    def obtener_reportes(pagina=1, limite=20, es_admin=False):
         conexion = conectar()
         try:
             offset = (pagina - 1) * limite
             cursor = conexion.cursor()
+
+            filtro_estado = "" if es_admin else "WHERE r.estado = 'aprobado'"
+
             cursor.execute(
-                """SELECT r.id, r.titulo, r.descripcion, r.localidad, r.categoria,
+                f"""SELECT r.id, r.titulo, r.descripcion, r.localidad, r.categoria,
                           r.estado, r.fecha_creacion, u.nombre, r.latitud, r.longitud, r.usuario_id
                    FROM reportes r
                    INNER JOIN usuarios u ON r.usuario_id = u.id
+                   {filtro_estado}
                    ORDER BY r.fecha_creacion DESC
                    LIMIT %s OFFSET %s""",
                 (limite, offset)

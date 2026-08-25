@@ -37,7 +37,8 @@ def crear_reporte():
 def obtener_reportes():
     pagina = int(request.args.get('pagina', 1))
     limite = int(request.args.get('limite', 20))
-    reportes = ReporteService.obtener_reportes(pagina, limite)
+    es_admin = request.usuario.get('rol') == 'admin'
+    reportes = ReporteService.obtener_reportes(pagina, limite, es_admin)
     return jsonify(reportes), 200
 
 
