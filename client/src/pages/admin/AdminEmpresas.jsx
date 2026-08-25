@@ -7,8 +7,10 @@ const TIPOS_MATERIAL = ['papel', 'plastico', 'vidrio', 'metal', 'organico', 'ele
 
 const FORM_VACIO = {
     nombre: '', tipo_material: '', direccion: '', localidad: '',
-    telefono: '', correo_contacto: ''
+    telefono: '', correo_contacto: '', logo: ''
 }
+
+const MAX_TAMANO_LOGO = 1.5 * 1024 * 1024 // 1.5MB en crudo, de sobra para un logo
 
 function AdminEmpresas() {
     const [empresas, setEmpresas] = useState([])
@@ -23,6 +25,23 @@ function AdminEmpresas() {
             const res = await api.get('/empresas', { headers: { Authorization: `Bearer ${token}` } })
             setEmpresas(res.data)
         } catch (error) { console.log(error) }
+    }
+
+    const manejarArchivoLogo = (e) => {
+        const archivo = e.target.files[0]
+        if (!archivo) return
+
+        if (archivo.size > MAX_TAMANO_LOGO) {
+            alert('El logo es muy pesado. Usa uno de máximo 1.5MB.')
+            e.target.value = ''
+            return
+        }
+
+        const lector = new FileReader()
+        lector.onload = () => {
+            setForm(prev => ({ ...prev, logo: lector.result }))
+        }
+        lector.readAsDataURL(archivo)
     }
 
     const guardarEmpresa = async () => {
@@ -44,7 +63,7 @@ function AdminEmpresas() {
             obtenerEmpresas()
         } catch (error) {
             console.log(error)
-            alert('Error al guardar la empresa')
+            alert(error.response?.data?.error || 'Error al guardar la empresa')
         }
     }
 
@@ -56,7 +75,8 @@ function AdminEmpresas() {
             direccion: empresa.direccion,
             localidad: empresa.localidad,
             telefono: empresa.telefono || '',
-            correo_contacto: empresa.correo_contacto || ''
+            correo_contacto: empresa.correo_contacto || '',
+            logo: empresa.logo || ''
         })
     }
 
@@ -73,7 +93,10 @@ function AdminEmpresas() {
             await api.delete(`/empresas/${id}`, { headers: { Authorization: `Bearer ${token}` } })
             alert('Empresa eliminada')
             obtenerEmpresas()
-        } catch (error) { console.log(error) }
+        } catch (error) {
+            console.log(error)
+            alert(error.response?.data?.error || 'Error al eliminar la empresa')
+        }
     }
 
     return (
@@ -132,6 +155,26 @@ function AdminEmpresas() {
                             onChange={(e) => setForm({ ...form, correo_contacto: e.target.value })}
                         />
 
+                        <label className="admin-campo-label">Logo de la empresa (opcional)</label>
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={manejarArchivoLogo}
+                        />
+
+                        {form.logo && (
+                            <div className="admin-imagen-preview">
+                                <img src={form.logo} alt="Vista previa del logo" className="admin-logo-preview" />
+                                <button
+                                    type="button"
+                                    className="admin-danger-btn"
+                                    onClick={() => setForm({ ...form, logo: '' })}
+                                >
+                                    ✖ Quitar logo
+                                </button>
+                            </div>
+                        )}
+
                         <div style={{ display: 'flex', gap: '10px' }}>
                             <button className="admin-primary-btn" onClick={guardarEmpresa}>
                                 {editandoId ? '💾 Guardar cambios' : '➕ Registrar Empresa'}
@@ -147,6 +190,9 @@ function AdminEmpresas() {
                     <div className="admin-grid">
                         {empresas.map((empresa) => (
                             <div className="admin-card" key={empresa.id}>
+                                {empresa.logo && (
+                                    <img src={empresa.logo} alt={empresa.nombre} className="admin-logo-preview" />
+                                )}
                                 <h2>{empresa.nombre}</h2>
                                 <p><strong>Material:</strong> {empresa.tipo_material}</p>
                                 <p>📍 {empresa.direccion}, {empresa.localidad}</p>

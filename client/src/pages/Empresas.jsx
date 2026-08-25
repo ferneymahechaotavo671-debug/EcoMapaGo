@@ -77,7 +77,11 @@ function Empresas() {
                     <div className="empresas-grid">
                         {empresasFiltradas.map((empresa) => (
                             <div key={empresa.id} className="empresa-card">
-                                <div className="empresa-icono">{ICONOS_MATERIAL[empresa.tipo_material] || '📦'}</div>
+                                {empresa.logo ? (
+                                    <img src={empresa.logo} alt={empresa.nombre} className="empresa-logo" />
+                                ) : (
+                                    <div className="empresa-icono">{ICONOS_MATERIAL[empresa.tipo_material] || '📦'}</div>
+                                )}
                                 <h2>{empresa.nombre}</h2>
                                 <span className="empresa-tipo-badge">{empresa.tipo_material}</span>
                                 <div className="empresa-info">

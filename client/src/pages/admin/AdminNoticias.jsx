@@ -6,6 +6,8 @@ import api from '../../services/api'
 
 import '../../styles/admin.css'
 
+const MAX_TAMANO_IMAGEN = 2.5 * 1024 * 1024 // 2.5MB en crudo (~3.4MB ya en base64)
+
 function AdminNoticias(){
 
     const [noticias, setNoticias] = useState([])
@@ -38,6 +40,23 @@ function AdminNoticias(){
 
         }
 
+    }
+
+    const manejarArchivoImagen = (e) => {
+        const archivo = e.target.files[0]
+        if (!archivo) return
+
+        if (archivo.size > MAX_TAMANO_IMAGEN) {
+            alert('La imagen es muy pesada. Usa una de máximo 2.5MB.')
+            e.target.value = ''
+            return
+        }
+
+        const lector = new FileReader()
+        lector.onload = () => {
+            setForm(prev => ({ ...prev, imagen: lector.result }))
+        }
+        lector.readAsDataURL(archivo)
     }
 
     const crearNoticia = async() => {
@@ -83,7 +102,7 @@ function AdminNoticias(){
 
             console.log(error)
 
-            alert('Error al crear noticia')
+            alert(error.response?.data?.error || 'Error al crear noticia')
 
         }
 
@@ -120,6 +139,8 @@ function AdminNoticias(){
         }catch(error){
 
             console.log(error)
+
+            alert(error.response?.data?.error || 'Error al eliminar la noticia')
 
         }
 
@@ -168,15 +189,36 @@ function AdminNoticias(){
                             })}
                         />
 
+                        <label className="admin-campo-label">Imagen de la noticia</label>
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={manejarArchivoImagen}
+                        />
+
                         <input
                             type="text"
-                            placeholder="URL de la imagen"
-                            value={form.imagen}
+                            placeholder="...o pega la URL de una imagen"
+                            value={form.imagen.startsWith('data:') ? '' : form.imagen}
+                            disabled={form.imagen.startsWith('data:')}
                             onChange={(e)=>setForm({
                                 ...form,
                                 imagen:e.target.value
                             })}
                         />
+
+                        {form.imagen && (
+                            <div className="admin-imagen-preview">
+                                <img src={form.imagen} alt="Vista previa" />
+                                <button
+                                    type="button"
+                                    className="admin-danger-btn"
+                                    onClick={() => setForm({ ...form, imagen: '' })}
+                                >
+                                    ✖ Quitar imagen
+                                </button>
+                            </div>
+                        )}
 
                         <button
                             className="admin-primary-btn"

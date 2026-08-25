@@ -1,7 +1,7 @@
 from dotenv import load_dotenv
 load_dotenv()  # Debe ser lo primero antes de cualquier import de la app
 
-from flask import Flask
+from flask import Flask, jsonify
 from flask_cors import CORS
 import os
 import logging
@@ -41,6 +41,15 @@ if not app.config['SECRET_KEY']:
     )
 
 limiter.init_app(app)
+
+# Límite de tamaño de peticiones (imágenes en base64 incluidas). 4MB es suficiente
+# para una foto de noticia o un logo razonable sin comprometer el servidor.
+app.config['MAX_CONTENT_LENGTH'] = 4 * 1024 * 1024
+
+
+@app.errorhandler(413)
+def imagen_demasiado_grande(e):
+    return jsonify({"error": "La imagen es demasiado pesada. Máximo 4MB."}), 413
 
 app.register_blueprint(usuario_bp)
 app.register_blueprint(protegido_bp)

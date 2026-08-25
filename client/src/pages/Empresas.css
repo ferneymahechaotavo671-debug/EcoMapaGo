@@ -89,6 +89,14 @@
 
 .empresa-icono { font-size: 34px; }
 
+.empresa-logo {
+    width: 56px;
+    height: 56px;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+}
+
 .empresa-card h2 {
     color: #2e7d32;
     font-size: 21px;

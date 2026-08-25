@@ -52,9 +52,13 @@ CREATE TABLE IF NOT EXISTS noticias (
     id SERIAL PRIMARY KEY,
     titulo VARCHAR(150) NOT NULL,
     descripcion TEXT NOT NULL,
-    imagen VARCHAR(500),
+    imagen TEXT,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Si la tabla ya existía con VARCHAR(500), esto la amplía para soportar imágenes en base64
+ALTER TABLE noticias ALTER COLUMN imagen TYPE TEXT;
+ALTER TABLE empresas_recicladoras ADD COLUMN IF NOT EXISTS logo TEXT;
 
 -- Usuario admin por defecto (password: Admin123)
 -- Hash generado con werkzeug.security.generate_password_hash (compatible con check_password_hash del backend)

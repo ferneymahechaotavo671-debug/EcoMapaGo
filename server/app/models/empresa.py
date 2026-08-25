@@ -9,7 +9,8 @@ class Empresa:
         telefono=None,
         correo_contacto=None,
         latitud=None,
-        longitud=None
+        longitud=None,
+        logo=None
     ):
         if not nombre or len(nombre.strip()) < 3:
             raise ValueError("El nombre de la empresa no es válido")
@@ -24,6 +25,7 @@ class Empresa:
         self.__correo_contacto = correo_contacto
         self.__latitud = latitud
         self.__longitud = longitud
+        self.__logo = logo
 
     # GETTERS
 
@@ -50,3 +52,6 @@ class Empresa:
 
     def get_longitud(self):
         return self.__longitud
+
+    def get_logo(self):
+        return self.__logo

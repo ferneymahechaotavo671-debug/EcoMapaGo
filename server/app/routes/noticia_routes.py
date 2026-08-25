@@ -14,8 +14,10 @@ noticia_bp = Blueprint('noticia_bp', __name__)
 def crear_noticia():
     try:
         data = request.get_json()
+        if not data or not data.get('titulo') or not data.get('descripcion'):
+            return jsonify({"error": "Título y descripción son requeridos"}), 400
         respuesta = NoticiaService.crear_noticia(
-            data['titulo'], data['descripcion'], data['imagen']
+            data['titulo'], data['descripcion'], data.get('imagen')
         )
         if "error" in respuesta:
             return jsonify(respuesta), 400
@@ -36,8 +38,10 @@ def obtener_noticias():
 def editar_noticia(id):
     try:
         data = request.get_json()
+        if not data or not data.get('titulo') or not data.get('descripcion'):
+            return jsonify({"error": "Título y descripción son requeridos"}), 400
         respuesta = NoticiaService.editar_noticia(
-            id, data['titulo'], data['descripcion'], data['imagen']
+            id, data['titulo'], data['descripcion'], data.get('imagen')
         )
         if "error" in respuesta:
             return jsonify(respuesta), 400

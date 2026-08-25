@@ -25,7 +25,7 @@ def crear_empresa():
         respuesta = EmpresaService.crear_empresa(
             data['nombre'], data['tipo_material'], data['direccion'], data['localidad'],
             data.get('telefono'), data.get('correo_contacto'),
-            data.get('latitud'), data.get('longitud')
+            data.get('latitud'), data.get('longitud'), data.get('logo')
         )
         if "error" in respuesta:
             return jsonify(respuesta), 400
@@ -55,7 +55,7 @@ def editar_empresa(id):
         respuesta = EmpresaService.editar_empresa(
             id, data['nombre'], data['tipo_material'], data['direccion'], data['localidad'],
             data.get('telefono'), data.get('correo_contacto'),
-            data.get('latitud'), data.get('longitud')
+            data.get('latitud'), data.get('longitud'), data.get('logo')
         )
         if "error" in respuesta:
             return jsonify(respuesta), 400

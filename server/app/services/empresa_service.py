@@ -16,13 +16,13 @@ class EmpresaService:
     @staticmethod
     def crear_empresa(nombre, tipo_material, direccion, localidad,
                        telefono=None, correo_contacto=None,
-                       latitud=None, longitud=None):
+                       latitud=None, longitud=None, logo=None):
         if tipo_material not in TIPOS_MATERIAL_VALIDOS:
             return {"error": f"Tipo de material inválido. Debe ser uno de: {', '.join(TIPOS_MATERIAL_VALIDOS)}"}
 
         try:
             empresa = Empresa(nombre, tipo_material, direccion, localidad,
-                               telefono, correo_contacto, latitud, longitud)
+                               telefono, correo_contacto, latitud, longitud, logo)
         except ValueError as e:
             return {"error": str(e)}
 
@@ -31,11 +31,11 @@ class EmpresaService:
             cursor = conexion.cursor()
             cursor.execute(
                 """INSERT INTO empresas_recicladoras
-                   (nombre, tipo_material, direccion, localidad, telefono, correo_contacto, latitud, longitud)
-                   VALUES (%s, %s, %s, %s, %s, %s, %s, %s)""",
+                   (nombre, tipo_material, direccion, localidad, telefono, correo_contacto, latitud, longitud, logo)
+                   VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)""",
                 (empresa.get_nombre(), empresa.get_tipo_material(), empresa.get_direccion(),
                  empresa.get_localidad(), empresa.get_telefono(), empresa.get_correo_contacto(),
-                 latitud, longitud)
+                 latitud, longitud, empresa.get_logo())
             )
             conexion.commit()
             cursor.close()
@@ -54,7 +54,7 @@ class EmpresaService:
             cursor = conexion.cursor()
             cursor.execute(
                 """SELECT id, nombre, tipo_material, direccion, localidad,
-                          telefono, correo_contacto, latitud, longitud, fecha_creacion
+                          telefono, correo_contacto, latitud, longitud, fecha_creacion, logo
                    FROM empresas_recicladoras
                    ORDER BY nombre ASC"""
             )
@@ -66,7 +66,8 @@ class EmpresaService:
                 "correo_contacto": e[6],
                 "latitud": float(e[7]) if e[7] else None,
                 "longitud": float(e[8]) if e[8] else None,
-                "fecha_creacion": str(e[9])
+                "fecha_creacion": str(e[9]),
+                "logo": e[10]
             } for e in empresas]
         except Exception:
             return []
@@ -76,7 +77,7 @@ class EmpresaService:
     @staticmethod
     def editar_empresa(empresa_id, nombre, tipo_material, direccion, localidad,
                         telefono=None, correo_contacto=None,
-                        latitud=None, longitud=None):
+                        latitud=None, longitud=None, logo=None):
         if tipo_material not in TIPOS_MATERIAL_VALIDOS:
             return {"error": f"Tipo de material inválido. Debe ser uno de: {', '.join(TIPOS_MATERIAL_VALIDOS)}"}
 
@@ -86,10 +87,10 @@ class EmpresaService:
             cursor.execute(
                 """UPDATE empresas_recicladoras
                    SET nombre=%s, tipo_material=%s, direccion=%s, localidad=%s,
-                       telefono=%s, correo_contacto=%s, latitud=%s, longitud=%s
+                       telefono=%s, correo_contacto=%s, latitud=%s, longitud=%s, logo=%s
                    WHERE id=%s""",
                 (nombre, tipo_material, direccion, localidad,
-                 telefono, correo_contacto, latitud, longitud, empresa_id)
+                 telefono, correo_contacto, latitud, longitud, logo, empresa_id)
             )
             if cursor.rowcount == 0:
                 return {"error": "Empresa no encontrada"}
