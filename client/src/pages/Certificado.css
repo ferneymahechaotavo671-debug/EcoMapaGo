@@ -1,0 +1,203 @@
+.cert-estado-carga, .cert-invalido {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: #f4f7f5;
+    color: #1b4332;
+    padding: 20px;
+}
+
+.cert-invalido-icono { font-size: 48px; margin-bottom: 10px; }
+
+.cert-pagina {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #eef2f0;
+    padding: 30px 16px;
+}
+
+.cert-documento {
+    background: #fffdf7;
+    max-width: 720px;
+    width: 100%;
+    padding: 50px 40px;
+    border-radius: 20px;
+    border: 10px solid #2d6a4f;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+    text-align: center;
+}
+
+.cert-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.cert-logo {
+    font-weight: 800;
+    font-size: 18px;
+    color: #1b4332;
+}
+
+.cert-badge-valido {
+    background: #e8f5e9;
+    color: #2e7d32;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: 999px;
+}
+
+.cert-otorga {
+    color: #64748b;
+    font-size: 14px;
+    margin-bottom: 6px;
+}
+
+.cert-nombre {
+    font-size: 32px;
+    color: #1b4332;
+    font-family: Georgia, serif;
+    margin: 0 0 20px;
+}
+
+.cert-texto {
+    color: #475569;
+    font-size: 14px;
+    margin: 4px 0;
+}
+
+.cert-nivel {
+    font-size: 22px;
+    font-weight: 800;
+    color: #2d6a4f;
+    margin: 8px 0;
+}
+
+.cert-puntos {
+    font-size: 20px;
+    font-weight: 700;
+    color: #92600a;
+    margin: 8px 0 24px;
+}
+
+.cert-footer {
+    display: flex;
+    justify-content: space-around;
+    border-top: 1px dashed #cbd5e1;
+    padding-top: 20px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.cert-footer-label {
+    font-size: 11px;
+    color: #94a3b8;
+    text-transform: uppercase;
+    margin: 0;
+}
+
+.cert-footer-valor {
+    font-weight: 700;
+    color: #1b4332;
+    margin: 4px 0 0;
+}
+
+.cert-codigo {
+    font-family: monospace;
+    letter-spacing: 1px;
+}
+
+.cert-verificacion-nota {
+    font-size: 11px;
+    color: #94a3b8;
+    margin-top: 20px;
+    word-break: break-all;
+}
+
+.cert-imprimir-btn {
+    margin-top: 24px;
+    padding: 14px 24px;
+    background: #2d6a4f;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.cert-imprimir-btn:hover { background: #1b4332; }
+
+/* Página para GENERAR (autenticada) */
+.cert-generar-layout {
+    display: flex;
+    min-height: 100vh;
+    background: #f4f7f5;
+}
+
+.cert-generar-container {
+    flex: 1;
+    margin-left: 260px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+}
+
+.cert-generar-card {
+    background: white;
+    max-width: 480px;
+    padding: 40px;
+    border-radius: 24px;
+    text-align: center;
+    box-shadow: 0 5px 18px rgba(0,0,0,0.08);
+}
+
+.cert-generar-icono { font-size: 44px; }
+
+.cert-generar-card h1 {
+    color: #1b4332;
+    font-size: 22px;
+    margin: 12px 0;
+}
+
+.cert-generar-card p {
+    color: #64748b;
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+.cert-generar-btn {
+    padding: 14px 24px;
+    background: #2d6a4f;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    width: 100%;
+}
+
+.cert-generar-btn:hover:not(:disabled) { background: #1b4332; }
+.cert-generar-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+
+@media (max-width: 768px) {
+    .cert-generar-container { margin-left: 0; padding: 95px 20px 30px 20px; }
+    .cert-documento { padding: 30px 22px; }
+    .cert-nombre { font-size: 24px; }
+}
+
+@media print {
+    .no-imprimir { display: none !important; }
+    .cert-pagina { background: white; padding: 0; }
+    .cert-documento { box-shadow: none; }
+}

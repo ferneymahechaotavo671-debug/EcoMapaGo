@@ -10,6 +10,7 @@ import logging
 from app.models.usuario import Usuario
 from app.database.conexion import conectar, liberar
 from app.utils.validator import Validator
+from app.utils.niveles import calcular_nivel
 
 
 logger = logging.getLogger(__name__)
@@ -127,7 +128,8 @@ class UsuarioService:
                 "nombre": usuario[1],
                 "correo": usuario[2],
                 "rol": usuario[3],
-                "puntos": usuario[4] or 0
+                "puntos": usuario[4] or 0,
+                "nivel": calcular_nivel(usuario[4] or 0)
             }
         except Exception as e:
             logger.exception("Error inesperado en la operación")

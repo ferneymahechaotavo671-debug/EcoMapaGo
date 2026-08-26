@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import Sidebar from '../components/Sidebar'
 import api from '../services/api'
 import './Perfil.css'
@@ -14,6 +14,7 @@ function Perfil() {
     const [mensaje, setMensaje] = useState('')
     const [loading, setLoading] = useState(false)
     const [puntos, setPuntos] = useState(null)
+    const [nivel, setNivel] = useState(null)
 
     useEffect(() => { cargarPerfil() }, [])
 
@@ -22,6 +23,7 @@ function Perfil() {
             const token = localStorage.getItem('token')
             const res = await api.get('/perfil', { headers: { Authorization: `Bearer ${token}` } })
             setPuntos(res.data.puntos ?? 0)
+            setNivel(res.data.nivel ?? null)
         } catch (e) { console.log(e) }
     }
 
@@ -76,8 +78,33 @@ function Perfil() {
                         <span className="perfil-puntos-numero">🏆 {puntos !== null ? puntos : '...'}</span>
                         <span className="perfil-puntos-label">puntos EcoMapaGo</span>
                         <p className="perfil-puntos-info">Ganas 10 puntos cada vez que un reporte tuyo es aprobado.</p>
+
+                        {nivel && (
+                            <div className="perfil-nivel">
+                                <span className="perfil-nivel-nombre">{nivel.icono} {nivel.nombre}</span>
+                                {nivel.siguiente_nombre ? (
+                                    <>
+                                        <div className="perfil-nivel-barra">
+                                            <div
+                                                className="perfil-nivel-barra-fill"
+                                                style={{ width: `${nivel.progreso_porcentaje}%` }}
+                                            />
+                                        </div>
+                                        <span className="perfil-nivel-siguiente">
+                                            Te faltan {nivel.puntos_siguiente_nivel - nivel.puntos_actuales} puntos para "{nivel.siguiente_nombre}"
+                                        </span>
+                                    </>
+                                ) : (
+                                    <span className="perfil-nivel-siguiente">¡Alcanzaste el nivel máximo! 🎉</span>
+                                )}
+                            </div>
+                        )}
                     </div>
                 </div>
+
+                <Link to="/certificado" className="perfil-certificado-link">
+                    📜 Generar mi certificado de impacto ambiental
+                </Link>
 
                 <form className="perfil-form" onSubmit={guardar}>
                     <h2>Editar información</h2>

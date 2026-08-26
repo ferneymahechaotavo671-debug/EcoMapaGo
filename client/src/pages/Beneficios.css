@@ -1,0 +1,172 @@
+.beneficios-layout {
+    display: flex;
+    min-height: 100vh;
+    background: #f4f7f5;
+}
+
+.beneficios-container {
+    width: 100%;
+    margin-left: 260px;
+    padding: 40px;
+    display: flex;
+    justify-content: center;
+}
+
+.beneficios-content {
+    width: 100%;
+    max-width: 1200px;
+}
+
+.beneficios-title {
+    font-size: 34px;
+    font-weight: 800;
+    color: #1b4332;
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+.beneficios-subtitle {
+    text-align: center;
+    color: #64748b;
+    margin-bottom: 20px;
+    font-size: 15px;
+}
+
+.beneficios-puntos-bar {
+    background: linear-gradient(135deg, #fff8e1, #ffecb3);
+    color: #92600a;
+    text-align: center;
+    padding: 14px;
+    border-radius: 16px;
+    font-size: 15px;
+    margin-bottom: 30px;
+}
+
+.beneficios-mensaje {
+    background: white;
+    padding: 20px;
+    border-radius: 18px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    font-weight: 700;
+    color: #2e7d32;
+    margin-bottom: 20px;
+}
+
+.beneficios-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 25px;
+    margin-bottom: 40px;
+}
+
+.beneficio-card {
+    background: white;
+    padding: 25px;
+    border-radius: 24px;
+    box-shadow: 0 5px 18px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    text-align: center;
+    align-items: center;
+}
+
+.beneficio-icono { font-size: 34px; }
+
+.beneficio-logo {
+    width: 56px;
+    height: 56px;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+}
+
+.beneficio-card h2 {
+    color: #2e7d32;
+    font-size: 19px;
+    margin: 4px 0 0;
+}
+
+.beneficio-empresa {
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.beneficio-desc {
+    color: #475569;
+    font-size: 13px;
+    margin: 4px 0;
+}
+
+.beneficio-costo {
+    background: #e8f5e9;
+    color: #2e7d32;
+    padding: 5px 14px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.beneficio-btn {
+    margin-top: 8px;
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 12px;
+    background: #2d6a4f;
+    color: white;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.beneficio-btn:hover:not(:disabled) { background: #1b4332; }
+.beneficio-btn:disabled { background: #cbd5e1; cursor: not-allowed; }
+
+.beneficios-subtitulo-seccion {
+    color: #1b4332;
+    margin-bottom: 16px;
+}
+
+.mis-canjes-lista {
+    background: white;
+    border-radius: 20px;
+    padding: 10px 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+}
+
+.mi-canje-fila {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 0;
+    border-bottom: 1px solid #f1f5f9;
+    gap: 10px;
+}
+
+.mi-canje-fila:last-child { border-bottom: none; }
+
+.mi-canje-codigo {
+    font-family: monospace;
+    color: #64748b;
+    font-size: 12px;
+}
+
+.mi-canje-estado {
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 999px;
+    white-space: nowrap;
+}
+
+.mi-canje-estado.vigente { background: #fff8e1; color: #92600a; }
+.mi-canje-estado.usado { background: #e8f5e9; color: #2e7d32; }
+
+@media (max-width: 768px) {
+    .beneficios-container { margin-left: 0; padding: 95px 20px 30px 20px; }
+    .beneficios-title { font-size: 28px; }
+    .mi-canje-fila { flex-direction: column; align-items: flex-start; }
+}

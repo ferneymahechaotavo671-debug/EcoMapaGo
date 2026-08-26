@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from app.middleware.auth_middleware import admin_requerido
 from app.services.noticia_service import NoticiaService
+from app.utils.imagenes import es_imagen_valida
 import logging
 
 
@@ -16,6 +17,8 @@ def crear_noticia():
         data = request.get_json()
         if not data or not data.get('titulo') or not data.get('descripcion'):
             return jsonify({"error": "Título y descripción son requeridos"}), 400
+        if not es_imagen_valida(data.get('imagen')):
+            return jsonify({"error": "Formato de imagen no soportado. Usa PNG, JPG, WEBP o GIF."}), 400
         respuesta = NoticiaService.crear_noticia(
             data['titulo'], data['descripcion'], data.get('imagen')
         )
@@ -40,6 +43,8 @@ def editar_noticia(id):
         data = request.get_json()
         if not data or not data.get('titulo') or not data.get('descripcion'):
             return jsonify({"error": "Título y descripción son requeridos"}), 400
+        if not es_imagen_valida(data.get('imagen')):
+            return jsonify({"error": "Formato de imagen no soportado. Usa PNG, JPG, WEBP o GIF."}), 400
         respuesta = NoticiaService.editar_noticia(
             id, data['titulo'], data['descripcion'], data.get('imagen')
         )

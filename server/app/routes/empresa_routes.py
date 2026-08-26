@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from app.middleware.auth_middleware import token_requerido, admin_requerido
 from app.services.empresa_service import EmpresaService
+from app.utils.imagenes import es_imagen_valida
 import logging
 
 
@@ -21,6 +22,8 @@ def crear_empresa():
         for campo in campos:
             if not data.get(campo):
                 return jsonify({"error": f"Campo requerido: {campo}"}), 400
+        if not es_imagen_valida(data.get('logo')):
+            return jsonify({"error": "Formato de logo no soportado. Usa PNG, JPG, WEBP o GIF."}), 400
 
         respuesta = EmpresaService.crear_empresa(
             data['nombre'], data['tipo_material'], data['direccion'], data['localidad'],
@@ -51,6 +54,8 @@ def editar_empresa(id):
         for campo in campos:
             if not data.get(campo):
                 return jsonify({"error": f"Campo requerido: {campo}"}), 400
+        if not es_imagen_valida(data.get('logo')):
+            return jsonify({"error": "Formato de logo no soportado. Usa PNG, JPG, WEBP o GIF."}), 400
 
         respuesta = EmpresaService.editar_empresa(
             id, data['nombre'], data['tipo_material'], data['direccion'], data['localidad'],

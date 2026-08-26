@@ -13,6 +13,8 @@ from app.routes.reporte_routes import reporte_bp
 from app.routes.noticia_routes import noticia_bp
 from app.routes.empresa_routes import empresa_bp
 from app.routes.metrica_routes import metrica_bp
+from app.routes.beneficio_routes import beneficio_bp
+from app.routes.certificado_routes import certificado_bp
 
 logging.basicConfig(
     level=logging.INFO,
@@ -57,6 +59,8 @@ app.register_blueprint(reporte_bp)
 app.register_blueprint(noticia_bp)
 app.register_blueprint(empresa_bp)
 app.register_blueprint(metrica_bp)
+app.register_blueprint(beneficio_bp)
+app.register_blueprint(certificado_bp)
 
 
 @app.route('/')

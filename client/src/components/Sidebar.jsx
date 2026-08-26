@@ -49,6 +49,7 @@ function Sidebar() {
                     <Link to="/reportes" className={isActive('/reportes')} onClick={cerrarMenu}>📍 Reportes</Link>
                     <Link to="/noticias" className={isActive('/noticias')} onClick={cerrarMenu}>📰 Noticias</Link>
                     <Link to="/empresas" className={isActive('/empresas')} onClick={cerrarMenu}>🏭 Empresas</Link>
+                    <Link to="/beneficios" className={isActive('/beneficios')} onClick={cerrarMenu}>🎁 Beneficios</Link>
                     <Link to="/metricas" className={isActive('/metricas')} onClick={cerrarMenu}>📊 Impacto</Link>
                     <Link to="/perfil" className={isActive('/perfil')} onClick={cerrarMenu}>👤 Perfil</Link>
 
@@ -59,6 +60,8 @@ function Sidebar() {
                             <Link to="/admin/reportes" className={isActive('/admin/reportes')} onClick={cerrarMenu}>📍 Gestionar Reportes</Link>
                             <Link to="/admin/noticias" className={isActive('/admin/noticias')} onClick={cerrarMenu}>📰 Gestionar Noticias</Link>
                             <Link to="/admin/empresas" className={isActive('/admin/empresas')} onClick={cerrarMenu}>🏭 Gestionar Empresas</Link>
+                            <Link to="/admin/beneficios" className={isActive('/admin/beneficios')} onClick={cerrarMenu}>🎁 Gestionar Beneficios</Link>
+                            <Link to="/admin/canjes" className={isActive('/admin/canjes')} onClick={cerrarMenu}>🎟️ Verificar Canjes</Link>
                             <Link to="/admin/usuarios" className={isActive('/admin/usuarios')} onClick={cerrarMenu}>👥 Usuarios</Link>
                         </>
                     )}

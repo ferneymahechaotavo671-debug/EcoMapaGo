@@ -1,0 +1,49 @@
+.canje-buscador {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.canje-buscador input {
+    flex: 1;
+    text-transform: uppercase;
+    font-family: monospace;
+    letter-spacing: 1px;
+}
+
+.canje-resultado {
+    margin-top: 16px;
+    padding: 18px;
+    border-radius: 14px;
+    font-size: 14px;
+}
+
+.canje-resultado p {
+    margin: 4px 0;
+}
+
+.canje-invalido {
+    background: #fef2f2;
+    color: #991b1b;
+}
+
+.canje-vigente {
+    background: #fff8e1;
+    color: #7a5a1e;
+}
+
+.canje-usado {
+    background: #e8f5e9;
+    color: #1b4332;
+}
+
+.canje-estado-texto {
+    font-weight: 700;
+    margin: 10px 0;
+}
+
+@media (max-width: 768px) {
+    .canje-buscador {
+        flex-direction: column;
+    }
+}

@@ -35,6 +35,15 @@ CREATE TABLE IF NOT EXISTS restablecimientos_password (
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS certificados (
+    id SERIAL PRIMARY KEY,
+    usuario_id INTEGER REFERENCES usuarios(id) ON DELETE CASCADE,
+    codigo VARCHAR(30) UNIQUE NOT NULL,
+    puntos_al_emitir INTEGER NOT NULL,
+    nivel VARCHAR(50),
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE IF NOT EXISTS empresas_recicladoras (
     id SERIAL PRIMARY KEY,
     nombre VARCHAR(150) NOT NULL,
@@ -45,6 +54,26 @@ CREATE TABLE IF NOT EXISTS empresas_recicladoras (
     correo_contacto VARCHAR(150),
     latitud DECIMAL(10, 7),
     longitud DECIMAL(10, 7),
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS beneficios (
+    id SERIAL PRIMARY KEY,
+    empresa_id INTEGER REFERENCES empresas_recicladoras(id) ON DELETE CASCADE,
+    titulo VARCHAR(150) NOT NULL,
+    descripcion TEXT,
+    costo_puntos INTEGER NOT NULL,
+    activo BOOLEAN DEFAULT TRUE,
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS canjes (
+    id SERIAL PRIMARY KEY,
+    usuario_id INTEGER REFERENCES usuarios(id) ON DELETE CASCADE,
+    beneficio_id INTEGER REFERENCES beneficios(id) ON DELETE CASCADE,
+    codigo VARCHAR(20) UNIQUE NOT NULL,
+    puntos_utilizados INTEGER NOT NULL,
+    usado BOOLEAN DEFAULT FALSE,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
