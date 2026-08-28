@@ -12,20 +12,22 @@ function RecuperarPassword() {
 
         try{
 
-            await api.post(
+            const res = await api.post(
                 '/recuperar-password',
                 {correo}
             )
 
             alert(
-                'Se envió un enlace a tu correo'
+                res.data.mensaje || 'Si el correo existe, recibirás instrucciones de recuperación'
             )
 
         }catch(error){
 
-            alert(
-                'No fue posible recuperar la contraseña'
-            )
+            if (error.response?.status === 429) {
+                alert('Demasiados intentos. Espera un momento e intenta de nuevo.')
+            } else {
+                alert('No fue posible procesar la solicitud')
+            }
 
         }
 

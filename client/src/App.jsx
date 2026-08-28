@@ -19,6 +19,7 @@ import GenerarCertificado from './pages/GenerarCertificado'
 import Certificado from './pages/Certificado'
 import Registro from "./pages/Registro"
 import RecuperarPassword from "./pages/RecuperarPassword"
+import RestablecerPassword from "./pages/RestablecerPassword"
 import ProtectedRoute from "./components/ProtectedRoute"
 
 function App() {
@@ -29,6 +30,7 @@ function App() {
                 <Route path="/" element={<Login />} />
                 <Route path="/registro" element={<Registro />} />
                 <Route path="/recuperar-password" element={<RecuperarPassword />} />
+                <Route path="/restablecer-password" element={<RestablecerPassword />} />
                 <Route path="/verificar/:codigo" element={<Certificado />} />
 
                 {/* Protegidas - usuario autenticado */}

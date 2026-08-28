@@ -24,6 +24,8 @@ CREATE TABLE IF NOT EXISTS reportes (
 
 -- Si la base ya existía antes de esta actualización, estas líneas agregan las columnas nuevas sin perder datos:
 ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS puntos INTEGER DEFAULT 0;
+ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS totp_secret TEXT;
+ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS totp_habilitado BOOLEAN DEFAULT FALSE;
 ALTER TABLE reportes ADD COLUMN IF NOT EXISTS puntos_otorgados BOOLEAN DEFAULT FALSE;
 
 CREATE TABLE IF NOT EXISTS restablecimientos_password (
@@ -89,12 +91,12 @@ CREATE TABLE IF NOT EXISTS noticias (
 ALTER TABLE noticias ALTER COLUMN imagen TYPE TEXT;
 ALTER TABLE empresas_recicladoras ADD COLUMN IF NOT EXISTS logo TEXT;
 
--- Usuario admin por defecto (password: Admin123)
+-- Usuario admin por defecto (password: EcoAdmin#2026!)
 -- Hash generado con werkzeug.security.generate_password_hash (compatible con check_password_hash del backend)
 INSERT INTO usuarios (nombre, correo, password, rol)
 VALUES (
     'Administrador',
     'admin@ecomapa.com',
-    'scrypt:32768:8:1$QxsvEsPNip4qRfk2$6d7594146f470bce70cd470ba1dd2515224f331f2c89f998fb970142dffa52d0142742ec233cdd29cf47dd6c029febd9205f5f8ff1ea6cd09dff0be2665fc570',
+    'scrypt:32768:8:1$OANrnUF4N3TaZOzr$2a48c804d1fb6147f2c776acf9066dafe0a2b0b4e4b7d1925adb6fcf12d45098ba67ddbf58a31c8367e0dc45199f2dd48db8ec829e59f8e02347fdb533e2216a',
     'admin'
 ) ON CONFLICT (correo) DO NOTHING;

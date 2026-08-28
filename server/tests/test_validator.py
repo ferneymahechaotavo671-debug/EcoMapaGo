@@ -18,6 +18,13 @@ def test_correo_invalido():
 def test_password_valida():
 
     assert Validator.validar_password(
+        "Ferney123!"
+    )
+
+
+def test_password_sin_simbolo_es_invalida():
+
+    assert not Validator.validar_password(
         "Ferney123"
     )
 

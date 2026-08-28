@@ -51,6 +51,26 @@ def login():
         return jsonify({"error": "Ocurrió un error interno. Intenta de nuevo más tarde."}), 500
 
 
+@usuario_bp.route('/login/verificar-2fa', methods=['POST'])
+@limiter.limit("8 per minute")
+def verificar_2fa_login():
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({"error": "Datos requeridos"}), 400
+
+        respuesta = UsuarioService.verificar_2fa_login(
+            data.get('token_temporal', ''),
+            data.get('codigo', '')
+        )
+        if "error" in respuesta:
+            return jsonify(respuesta), 401
+        return jsonify(respuesta), 200
+    except Exception as e:
+        logger.exception("Error inesperado en el endpoint")
+        return jsonify({"error": "Ocurrió un error interno. Intenta de nuevo más tarde."}), 500
+
+
 @usuario_bp.route('/usuarios', methods=['GET'])
 @admin_requerido
 def obtener_usuarios():

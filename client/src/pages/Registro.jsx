@@ -25,18 +25,19 @@ function Registro() {
 
     }
 
-    // 🔐 NIVEL DE SEGURIDAD DE CONTRASEÑA
+    // 🔐 NIVEL DE SEGURIDAD DE CONTRASEÑA (alineado con la política del backend)
     const getPasswordStrength = (password) => {
 
         let score = 0
 
-        if (password.length >= 6) score++
-        if (/[A-Z]/.test(password)) score++
-        if (/\d/.test(password)) score++
         if (password.length >= 10) score++
+        if (/[A-Z]/.test(password)) score++
+        if (/[a-z]/.test(password)) score++
+        if (/\d/.test(password)) score++
+        if (/[!@#$%^&*()_\-+=[\]{};:'",.<>/?\\|`~]/.test(password)) score++
 
-        if (score <= 1) return { text: 'Débil 🔴', color: '#c62828' }
-        if (score === 2 || score === 3) return { text: 'Media 🟠', color: '#f9a825' }
+        if (score <= 2) return { text: 'Débil 🔴', color: '#c62828' }
+        if (score <= 4) return { text: 'Media 🟠', color: '#f9a825' }
         return { text: 'Fuerte 🟢', color: '#2e7d32' }
     }
 
@@ -55,11 +56,11 @@ function Registro() {
             return
         }
 
-        // PASSWORD SEGURA
-        const passwordRegex = /^(?=.*[A-Z])(?=.*\d).{6,}$/
+        // PASSWORD SEGURA (debe coincidir con la política robusta del backend)
+        const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*()_\-+=[\]{};:'",.<>/?\\|`~]).{10,}$/
 
         if (!passwordRegex.test(form.password)) {
-            setMensaje('🔒 La contraseña debe tener mínimo 6 caracteres, una mayúscula y un número')
+            setMensaje('🔒 La contraseña debe tener mínimo 10 caracteres, mayúscula, minúscula, número y símbolo')
             return
         }
 
@@ -190,11 +191,13 @@ function Registro() {
                 }}>
                     La contraseña debe tener:
                     <br />
-                    • Una mayúscula
+                    • Mínimo 10 caracteres
+                    <br />
+                    • Una mayúscula y una minúscula
                     <br />
                     • Un número
                     <br />
-                    • Mínimo 6 caracteres
+                    • Un símbolo (ej: ! @ # $ % &)
                 </small>
 
                 {mensaje && (

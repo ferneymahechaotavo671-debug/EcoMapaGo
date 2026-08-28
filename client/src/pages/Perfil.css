@@ -138,6 +138,71 @@
     background: #f0fdf4;
 }
 
+.perfil-seguridad-card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 28px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+.perfil-seguridad-card h2 {
+    color: #1b4332;
+    font-size: 18px;
+    margin: 0 0 12px;
+}
+
+.perfil-seguridad-texto {
+    color: #64748b;
+    font-size: 13px;
+    margin: 8px 0;
+    line-height: 1.6;
+}
+
+.perfil-2fa-config {
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.perfil-2fa-qr {
+    width: 180px;
+    height: 180px;
+    align-self: center;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 8px;
+    background: white;
+}
+
+.perfil-2fa-secreto {
+    display: block;
+    margin-top: 6px;
+    background: #f1f5f9;
+    padding: 8px;
+    border-radius: 8px;
+    font-family: monospace;
+    letter-spacing: 2px;
+    text-align: center;
+    word-break: break-all;
+}
+
+.perfil-2fa-activa {
+    color: #2e7d32;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.perfil-btn-secundario {
+    background: #e2e8f0;
+    color: #334155;
+}
+
+.perfil-btn-secundario:hover {
+    background: #cbd5e1;
+}
+
 .perfil-form {
     background: white;
     border-radius: 16px;

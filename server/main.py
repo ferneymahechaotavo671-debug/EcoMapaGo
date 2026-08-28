@@ -15,6 +15,7 @@ from app.routes.empresa_routes import empresa_bp
 from app.routes.metrica_routes import metrica_bp
 from app.routes.beneficio_routes import beneficio_bp
 from app.routes.certificado_routes import certificado_bp
+from app.routes.dosfa_routes import dosfa_bp
 
 logging.basicConfig(
     level=logging.INFO,
@@ -42,6 +43,14 @@ if not app.config['SECRET_KEY']:
         "de Render (producción) antes de iniciar la aplicación."
     )
 
+if not os.getenv('ENCRYPTION_KEY'):
+    raise RuntimeError(
+        "La variable de entorno ENCRYPTION_KEY es obligatoria y no está configurada. "
+        "Se usa para cifrar el secreto de la verificación en dos pasos (2FA) en la base de datos. "
+        "Genera una con: python -c \"from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())\" "
+        "y defínela en tu .env local o en las variables de entorno de Render."
+    )
+
 limiter.init_app(app)
 
 # Límite de tamaño de peticiones (imágenes en base64 incluidas). 4MB es suficiente
@@ -61,6 +70,7 @@ app.register_blueprint(empresa_bp)
 app.register_blueprint(metrica_bp)
 app.register_blueprint(beneficio_bp)
 app.register_blueprint(certificado_bp)
+app.register_blueprint(dosfa_bp)
 
 
 @app.route('/')

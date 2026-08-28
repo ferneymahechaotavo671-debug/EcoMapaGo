@@ -23,8 +23,9 @@ class UsuarioService:
             return {"error": "Nombre inválido"}
         if not Validator.validar_correo(correo):
             return {"error": "Correo inválido"}
-        if not Validator.validar_password(password):
-            return {"error": "La contraseña debe tener mínimo 8 caracteres, una mayúscula y un número"}
+        eval_pwd = Validator.evaluar_password(password)
+        if not eval_pwd["valida"]:
+            return {"error": "La contraseña no es suficientemente segura. Falta: " + ", ".join(eval_pwd["errores"])}
 
         try:
             usuario = Usuario(nombre, correo, password)
@@ -75,7 +76,7 @@ class UsuarioService:
         try:
             cursor = conexion.cursor()
             cursor.execute(
-                "SELECT id, nombre, correo, password, rol FROM usuarios WHERE correo = %s",
+                "SELECT id, nombre, correo, password, rol, totp_habilitado FROM usuarios WHERE correo = %s",
                 (correo,)
             )
             usuario = cursor.fetchone()
@@ -92,6 +93,14 @@ class UsuarioService:
         if not check_password_hash(usuario[3], password):
             return {"error": "Correo o contraseña incorrectos"}
 
+        if usuario[5]:
+            token_temporal = jwt.encode({
+                "id": usuario[0],
+                "paso": "2fa_pendiente",
+                "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=5)
+            }, current_app.config['SECRET_KEY'], algorithm='HS256')
+            return {"requiere_2fa": True, "token_temporal": token_temporal}
+
         token = jwt.encode({
             "id": usuario[0],
             "nombre": usuario[1],
@@ -107,6 +116,61 @@ class UsuarioService:
                 "nombre": usuario[1],
                 "correo": usuario[2],
                 "rol": usuario[4]
+            }
+        }
+
+    @staticmethod
+    def verificar_2fa_login(token_temporal, codigo):
+        from app.services.dosfa_service import DosFAService
+
+        try:
+            datos = jwt.decode(token_temporal, current_app.config['SECRET_KEY'], algorithms=["HS256"])
+        except jwt.ExpiredSignatureError:
+            return {"error": "El código temporal expiró. Vuelve a iniciar sesión."}
+        except jwt.InvalidTokenError:
+            return {"error": "Token inválido"}
+
+        if datos.get("paso") != "2fa_pendiente":
+            return {"error": "Token inválido"}
+
+        usuario_id = datos["id"]
+
+        if not DosFAService.verificar_codigo_login(usuario_id, codigo):
+            return {"error": "Código de verificación incorrecto"}
+
+        conexion = conectar()
+        try:
+            cursor = conexion.cursor()
+            cursor.execute(
+                "SELECT id, nombre, correo, rol FROM usuarios WHERE id=%s",
+                (usuario_id,)
+            )
+            usuario = cursor.fetchone()
+            cursor.close()
+        except Exception:
+            logger.exception("Error al completar login con 2FA")
+            return {"error": "Ocurrió un error interno. Intenta de nuevo más tarde."}
+        finally:
+            liberar(conexion)
+
+        if not usuario:
+            return {"error": "Usuario no encontrado"}
+
+        token = jwt.encode({
+            "id": usuario[0],
+            "nombre": usuario[1],
+            "correo": usuario[2],
+            "rol": usuario[3],
+            "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=5)
+        }, current_app.config['SECRET_KEY'], algorithm='HS256')
+
+        return {
+            "token": token,
+            "usuario": {
+                "id": usuario[0],
+                "nombre": usuario[1],
+                "correo": usuario[2],
+                "rol": usuario[3]
             }
         }
 
@@ -183,8 +247,9 @@ class UsuarioService:
 
     @staticmethod
     def restablecer_password(token, password_nueva):
-        if not Validator.validar_password(password_nueva):
-            return {"error": "La contraseña debe tener mínimo 8 caracteres, una mayúscula y un número"}
+        eval_pwd = Validator.evaluar_password(password_nueva)
+        if not eval_pwd["valida"]:
+            return {"error": "La contraseña no es suficientemente segura. Falta: " + ", ".join(eval_pwd["errores"])}
 
         token_hash = hashlib.sha256(token.encode()).hexdigest()
         conexion = conectar()
@@ -234,8 +299,9 @@ class UsuarioService:
             if password_nueva:
                 if not check_password_hash(usuario[1], password_actual):
                     return {"error": "Contraseña actual incorrecta"}
-                if not Validator.validar_password(password_nueva):
-                    return {"error": "La nueva contraseña no cumple los requisitos"}
+                eval_pwd = Validator.evaluar_password(password_nueva)
+                if not eval_pwd["valida"]:
+                    return {"error": "La contraseña no es suficientemente segura. Falta: " + ", ".join(eval_pwd["errores"])}
                 nuevo_hash = generate_password_hash(password_nueva)
                 cursor.execute(
                     "UPDATE usuarios SET nombre = %s, password = %s WHERE id = %s",

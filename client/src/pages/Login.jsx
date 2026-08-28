@@ -10,6 +10,9 @@ function Login() {
 
     const [correo, setCorreo] = useState('')
     const [password, setPassword] = useState('')
+    const [tokenTemporal, setTokenTemporal] = useState(null)
+    const [codigo2fa, setCodigo2fa] = useState('')
+    const [verificando, setVerificando] = useState(false)
 
     const login = async (e) => {
         e.preventDefault()
@@ -19,6 +22,11 @@ function Login() {
                 correo,
                 password
             })
+
+            if (res.data.requiere_2fa) {
+                setTokenTemporal(res.data.token_temporal)
+                return
+            }
 
             localStorage.setItem('token', res.data.token)
             localStorage.setItem('usuario', JSON.stringify(res.data.usuario))
@@ -33,6 +41,28 @@ function Login() {
         }
     }
 
+    const verificarCodigo2fa = async (e) => {
+        e.preventDefault()
+        setVerificando(true)
+        try {
+            const res = await api.post('/login/verificar-2fa', {
+                token_temporal: tokenTemporal,
+                codigo: codigo2fa
+            })
+            localStorage.setItem('token', res.data.token)
+            localStorage.setItem('usuario', JSON.stringify(res.data.usuario))
+            navigate('/dashboard')
+        } catch (err) {
+            if (err.response?.status === 429) {
+                alert('Demasiados intentos. Espera un minuto e intenta de nuevo.')
+            } else {
+                alert(err.response?.data?.error || 'Código incorrecto')
+            }
+        } finally {
+            setVerificando(false)
+        }
+    }
+
     return (
         <div style={{
             minHeight: '100vh',
@@ -43,7 +73,7 @@ function Login() {
         }}>
 
             <form
-                onSubmit={login}
+                onSubmit={tokenTemporal ? verificarCodigo2fa : login}
                 className="card fade-in"
                 style={{
                     width: '400px'
@@ -52,24 +82,45 @@ function Login() {
                 <img src={logo} className="logo" />
 
                 <h1>EcoMapaGo</h1>
-                <p>Reporta y mejora tu ciudad</p>
 
-                <input
-                    type="email"
-                    placeholder="Correo"
-                    value={correo}
-                    onChange={(e) => setCorreo(e.target.value)}
-                />
+                {!tokenTemporal ? (
+                    <>
+                        <p>Reporta y mejora tu ciudad</p>
 
-                <input
-                    type="password"
-                    placeholder="Contraseña"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                />
+                        <input
+                            type="email"
+                            placeholder="Correo"
+                            value={correo}
+                            onChange={(e) => setCorreo(e.target.value)}
+                        />
+
+                        <input
+                            type="password"
+                            placeholder="Contraseña"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                        />
+                    </>
+                ) : (
+                    <>
+                        <p>🔐 Ingresa el código de 6 dígitos de tu app autenticadora</p>
+
+                        <input
+                            type="text"
+                            inputMode="numeric"
+                            maxLength={6}
+                            placeholder="123456"
+                            value={codigo2fa}
+                            onChange={(e) => setCodigo2fa(e.target.value.replace(/\D/g, ''))}
+                            style={{ textAlign: 'center', fontSize: '22px', letterSpacing: '6px' }}
+                            autoFocus
+                        />
+                    </>
+                )}
 
                 <button
                     type="submit"
+                    disabled={verificando}
                     style={{
                         width: '100%',
                         padding: '15px',
@@ -82,9 +133,28 @@ function Login() {
                         cursor: 'pointer'
                     }}
                 >
-                    Iniciar Sesión
+                    {tokenTemporal ? (verificando ? 'Verificando...' : 'Verificar código') : 'Iniciar Sesión'}
                 </button>
 
+                {tokenTemporal && (
+                    <button
+                        type="button"
+                        onClick={() => { setTokenTemporal(null); setCodigo2fa('') }}
+                        style={{
+                            width: '100%',
+                            padding: '10px',
+                            background: 'transparent',
+                            color: '#555',
+                            border: 'none',
+                            marginTop: '10px',
+                            cursor: 'pointer'
+                        }}
+                    >
+                        ← Volver
+                    </button>
+                )}
+
+                {!tokenTemporal && (
                 <div
     style={{
         marginTop:'20px',
@@ -117,6 +187,7 @@ function Login() {
     </Link>
 
 </div>
+                )}
             </form>
 
         </div>
