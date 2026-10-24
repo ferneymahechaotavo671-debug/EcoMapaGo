@@ -34,7 +34,7 @@ export default defineConfig(({ command, mode }) => {
       name: 'inyectar-csp-y-metadatos',
       transformIndexHtml(html) {
         if (command !== 'build') return html
-        const meta = `<meta http-equiv="Content-Security-Policy" content="${politicaCSP(apiUrl)}" />\n    <meta name="referrer" content="no-referrer" />`
+        const meta = `<meta http-equiv="Content-Security-Policy" content="${politicaCSP(apiUrl)}" />\n    <meta name="referrer" content="strict-origin-when-cross-origin" />`
         return html.replace('<meta charset="UTF-8" />', `<meta charset="UTF-8" />\n    ${meta}`)
       },
     },

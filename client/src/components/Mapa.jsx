@@ -255,7 +255,11 @@ function Mapa() {
                     <FixMap />
                     {ubicacionUsuario && <ChangeView center={ubicacionUsuario} />}
                     <MapClickHandler setPosicion={setPosicion} />
-                    <TileLayer attribution='&copy; OpenStreetMap' url="https://tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                    <TileLayer
+                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                        url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+                        referrerPolicy="strict-origin-when-cross-origin"
+                    />
 
                     {/* Marcador de nueva posición */}
                     {posicion && <Marker position={[posicion.lat, posicion.lng]} icon={iconoUsuario()} />}
