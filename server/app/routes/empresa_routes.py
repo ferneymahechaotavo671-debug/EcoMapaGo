@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from app.middleware.auth_middleware import token_requerido, admin_requerido
 from app.services.empresa_service import EmpresaService
-from app.utils.imagenes import es_imagen_valida
+from app.utils.esquemas import limpiar_empresa
 import logging
 
 
@@ -9,33 +9,26 @@ logger = logging.getLogger(__name__)
 
 empresa_bp = Blueprint('empresa_bp', __name__)
 
+ERROR_INTERNO = {"error": "Ocurrió un error interno. Intenta de nuevo más tarde."}
+
 
 @empresa_bp.route('/empresas', methods=['POST'])
 @admin_requerido
 def crear_empresa():
     try:
-        data = request.get_json()
-        if not data:
-            return jsonify({"error": "Datos requeridos"}), 400
-
-        campos = ['nombre', 'tipo_material', 'direccion', 'localidad']
-        for campo in campos:
-            if not data.get(campo):
-                return jsonify({"error": f"Campo requerido: {campo}"}), 400
-        if not es_imagen_valida(data.get('logo')):
-            return jsonify({"error": "Formato de logo no soportado. Usa PNG, JPG, WEBP o GIF."}), 400
-
+        c, error = limpiar_empresa(request.get_json(silent=True))
+        if error:
+            return jsonify({"error": error}), 400
         respuesta = EmpresaService.crear_empresa(
-            data['nombre'], data['tipo_material'], data['direccion'], data['localidad'],
-            data.get('telefono'), data.get('correo_contacto'),
-            data.get('latitud'), data.get('longitud'), data.get('logo')
+            c['nombre'], c['tipo_material'], c['direccion'], c['localidad'],
+            c['telefono'], c['correo_contacto'], c['latitud'], c['longitud'], c['logo']
         )
         if "error" in respuesta:
             return jsonify(respuesta), 400
         return jsonify(respuesta), 201
-    except Exception as e:
+    except Exception:
         logger.exception("Error inesperado en el endpoint")
-        return jsonify({"error": "Ocurrió un error interno. Intenta de nuevo más tarde."}), 500
+        return jsonify(ERROR_INTERNO), 500
 
 
 @empresa_bp.route('/empresas', methods=['GET'])
@@ -49,25 +42,19 @@ def obtener_empresas():
 @admin_requerido
 def editar_empresa(id):
     try:
-        data = request.get_json()
-        campos = ['nombre', 'tipo_material', 'direccion', 'localidad']
-        for campo in campos:
-            if not data.get(campo):
-                return jsonify({"error": f"Campo requerido: {campo}"}), 400
-        if not es_imagen_valida(data.get('logo')):
-            return jsonify({"error": "Formato de logo no soportado. Usa PNG, JPG, WEBP o GIF."}), 400
-
+        c, error = limpiar_empresa(request.get_json(silent=True))
+        if error:
+            return jsonify({"error": error}), 400
         respuesta = EmpresaService.editar_empresa(
-            id, data['nombre'], data['tipo_material'], data['direccion'], data['localidad'],
-            data.get('telefono'), data.get('correo_contacto'),
-            data.get('latitud'), data.get('longitud'), data.get('logo')
+            id, c['nombre'], c['tipo_material'], c['direccion'], c['localidad'],
+            c['telefono'], c['correo_contacto'], c['latitud'], c['longitud'], c['logo']
         )
         if "error" in respuesta:
             return jsonify(respuesta), 400
         return jsonify(respuesta), 200
-    except Exception as e:
+    except Exception:
         logger.exception("Error inesperado en el endpoint")
-        return jsonify({"error": "Ocurrió un error interno. Intenta de nuevo más tarde."}), 500
+        return jsonify(ERROR_INTERNO), 500
 
 
 @empresa_bp.route('/empresas/<int:id>', methods=['DELETE'])

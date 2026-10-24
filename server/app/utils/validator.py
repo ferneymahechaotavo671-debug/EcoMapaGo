@@ -24,6 +24,8 @@ class Validator:
 
         if len(password) < 10:
             errores.append("mínimo 10 caracteres")
+        if len(password) > 128:
+            errores.append("máximo 128 caracteres")
         if not re.search(r'[A-Z]', password):
             errores.append("al menos 1 mayúscula")
         if not re.search(r'[a-z]', password):

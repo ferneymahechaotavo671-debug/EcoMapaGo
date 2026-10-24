@@ -1,0 +1,12 @@
+# Revisión automática de dependencias vulnerables (punto 20).
+# GitHub abrirá Pull Requests cuando una librería tenga una actualización o una falla de seguridad.
+version: 2
+updates:
+  - package-ecosystem: "pip"
+    directory: "/server"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "npm"
+    directory: "/client"
+    schedule:
+      interval: "weekly"

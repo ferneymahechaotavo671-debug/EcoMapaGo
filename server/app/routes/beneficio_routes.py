@@ -3,6 +3,7 @@ from flask import Blueprint, request, jsonify
 from app.middleware.auth_middleware import token_requerido, admin_requerido
 from app.services.beneficio_service import BeneficioService
 from app.extensions import limiter
+from app.utils.esquemas import limpiar_beneficio
 
 logger = logging.getLogger(__name__)
 beneficio_bp = Blueprint('beneficio_bp', __name__)
@@ -12,11 +13,13 @@ beneficio_bp = Blueprint('beneficio_bp', __name__)
 @admin_requerido
 def crear_beneficio():
     try:
-        data = request.get_json()
-        if not data or not data.get('empresa_id') or not data.get('titulo') or not data.get('costo_puntos'):
-            return jsonify({"error": "empresa_id, título y costo en puntos son requeridos"}), 400
+        c, error = limpiar_beneficio(request.get_json(silent=True))
+        if error:
+            return jsonify({"error": error}), 400
+        if not c['empresa_id']:
+            return jsonify({"error": "La empresa es requerida"}), 400
         respuesta = BeneficioService.crear_beneficio(
-            data['empresa_id'], data['titulo'], data.get('descripcion', ''), int(data['costo_puntos'])
+            c['empresa_id'], c['titulo'], c['descripcion'], c['costo_puntos']
         )
         if "error" in respuesta:
             return jsonify(respuesta), 400
@@ -38,12 +41,11 @@ def obtener_beneficios():
 @admin_requerido
 def editar_beneficio(id):
     try:
-        data = request.get_json()
-        if not data or not data.get('titulo') or not data.get('costo_puntos'):
-            return jsonify({"error": "Título y costo en puntos son requeridos"}), 400
+        c, error = limpiar_beneficio(request.get_json(silent=True))
+        if error:
+            return jsonify({"error": error}), 400
         respuesta = BeneficioService.editar_beneficio(
-            id, data['titulo'], data.get('descripcion', ''),
-            int(data['costo_puntos']), data.get('activo', True)
+            id, c['titulo'], c['descripcion'], c['costo_puntos'], c['activo']
         )
         if "error" in respuesta:
             return jsonify(respuesta), 400

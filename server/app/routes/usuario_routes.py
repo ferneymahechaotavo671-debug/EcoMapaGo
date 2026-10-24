@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from app.services.usuario_service import UsuarioService
 from app.middleware.auth_middleware import token_requerido, admin_requerido
 from app.extensions import limiter
+from app.utils.seguridad import sanitizar_texto
 import logging
 
 
@@ -14,14 +15,19 @@ usuario_bp = Blueprint('usuario_bp', __name__)
 @limiter.limit("10 per hour")
 def registro():
     try:
-        data = request.get_json()
-        if not data:
+        data = request.get_json(silent=True)
+        if not data or not isinstance(data, dict):
             return jsonify({"error": "Datos requeridos"}), 400
 
+        # Trampa para bots (honeypot): este campo está oculto para personas; si llega con
+        # contenido, lo rellenó un script. Se responde "éxito" sin crear nada.
+        if data.get('website'):
+            return jsonify({"mensaje": "Usuario creado correctamente"}), 201
+
         respuesta = UsuarioService.crear_usuario(
-            data.get('nombre', ''),
-            data.get('correo', ''),
-            data.get('password', '')
+            sanitizar_texto(data.get('nombre', ''), 100) or '',
+            str(data.get('correo', '')).strip()[:150],
+            str(data.get('password', ''))
         )
         if "error" in respuesta:
             return jsonify(respuesta), 400
@@ -35,13 +41,13 @@ def registro():
 @limiter.limit("8 per minute")
 def login():
     try:
-        data = request.get_json()
-        if not data:
+        data = request.get_json(silent=True)
+        if not data or not isinstance(data, dict):
             return jsonify({"error": "Datos requeridos"}), 400
 
         respuesta = UsuarioService.login(
-            data.get('correo', ''),
-            data.get('password', '')
+            str(data.get('correo', '')).strip()[:150],
+            str(data.get('password', ''))[:129]
         )
         if "error" in respuesta:
             return jsonify(respuesta), 401
@@ -82,13 +88,15 @@ def obtener_usuarios():
 @token_requerido
 def actualizar_perfil():
     try:
-        data = request.get_json()
+        data = request.get_json(silent=True)
+        if not data or not isinstance(data, dict):
+            return jsonify({"error": "Datos requeridos"}), 400
         usuario = request.usuario
         respuesta = UsuarioService.actualizar_perfil(
             usuario['id'],
-            data.get('nombre', ''),
-            data.get('password_actual', ''),
-            data.get('password_nueva', '')
+            sanitizar_texto(data.get('nombre', ''), 100) or '',
+            str(data.get('password_actual', ''))[:129],
+            str(data.get('password_nueva', ''))
         )
         if "error" in respuesta:
             return jsonify(respuesta), 400
@@ -102,10 +110,13 @@ def actualizar_perfil():
 @limiter.limit("5 per hour")
 def recuperar_password():
     try:
-        data = request.get_json()
-        correo = data.get('correo', '') if data else ''
+        data = request.get_json(silent=True)
+        data = data if isinstance(data, dict) else {}
+        correo = str(data.get('correo', '')).strip()[:150]
         if not correo:
             return jsonify({"error": "Correo requerido"}), 400
+        if data.get('website'):  # honeypot anti-bots
+            return jsonify({"mensaje": "Si el correo existe, recibirás instrucciones de recuperación"}), 200
         respuesta = UsuarioService.solicitar_recuperacion(correo)
         return jsonify(respuesta), 200
     except Exception as e:

@@ -37,14 +37,14 @@ class BeneficioService:
         conexion = conectar()
         try:
             cursor = conexion.cursor()
-            filtro = "WHERE b.activo = TRUE" if solo_activos else ""
             cursor.execute(
-                f"""SELECT b.id, b.titulo, b.descripcion, b.costo_puntos, b.activo,
+                """SELECT b.id, b.titulo, b.descripcion, b.costo_puntos, b.activo,
                           e.id, e.nombre, e.logo
                    FROM beneficios b
                    INNER JOIN empresas_recicladoras e ON b.empresa_id = e.id
-                   {filtro}
-                   ORDER BY b.costo_puntos ASC"""
+                   WHERE (%s OR b.activo = TRUE)
+                   ORDER BY b.costo_puntos ASC""",
+                (not solo_activos,)
             )
             filas = cursor.fetchall()
             cursor.close()

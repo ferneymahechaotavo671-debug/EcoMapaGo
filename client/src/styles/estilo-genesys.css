@@ -1,0 +1,95 @@
+/* ==========================================================================
+   Estilo visual inspirado en genesyslm.com.co: bloques con aire, tarjetas de
+   bordes suaves, títulos grandes, acentos verdes y animaciones de entrada.
+   NO se aplica al componente del mapa (.leaflet-container y .mapa-*).
+   ========================================================================== */
+
+:root {
+  --gen-acento: #5dc4af;
+  --gen-acento-oscuro: #2f8f7a;
+  --gen-fondo: #f7fbfa;
+  --gen-texto: #1f2d2a;
+}
+
+/* ---------- Entrada suave de cada bloque (sin afectar al mapa) ---------- */
+@keyframes genAparecer {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Todo el contenido de página, EXCEPTO el mapa y su contenedor */
+.dashboard-content > *:not(:has(.leaflet-container)),
+.reportes-content, .empresas-content, .noticias-content, .metricas-content,
+.beneficios-content, .perfil-container, .admin-content, .cert-generar-card,
+.cert-pagina, .cert-estado-carga, .cert-invalido {
+  animation: genAparecer .6s cubic-bezier(.2,.7,.2,1) both;
+}
+
+/* Escalonar la entrada de tarjetas dentro de una cuadrícula */
+.stats-grid > *:nth-child(1), .empresas-grid > *:nth-child(1), .metricas-stats-grid > *:nth-child(1) { animation: genAparecer .6s .05s both; }
+.stats-grid > *:nth-child(2), .empresas-grid > *:nth-child(2), .metricas-stats-grid > *:nth-child(2) { animation: genAparecer .6s .12s both; }
+.stats-grid > *:nth-child(3), .empresas-grid > *:nth-child(3), .metricas-stats-grid > *:nth-child(3) { animation: genAparecer .6s .19s both; }
+.stats-grid > *:nth-child(4), .empresas-grid > *:nth-child(4), .metricas-stats-grid > *:nth-child(4) { animation: genAparecer .6s .26s both; }
+
+/* ---------- Títulos: estilo editorial con subrayado de marca ---------- */
+.reportes-title, .empresas-title, .noticias-title, .metricas-title,
+.beneficios-title, .admin-title, .perfil-container h1, .dashboard-header h1 {
+  color: var(--gen-texto);
+  font-weight: 800;
+  letter-spacing: -.02em;
+}
+.reportes-title::after, .empresas-title::after, .noticias-title::after,
+.metricas-title::after, .beneficios-title::after, .admin-title::after {
+  background: var(--gen-acento) !important;
+}
+
+/* ---------- Tarjetas: bordes suaves y elevación al pasar el cursor ---------- */
+.empresa-card, .reporte-card, .admin-card, .beneficio-card, .metrica-panel,
+.perfil-card, .perfil-seguridad-card, .mis-canjes-lista, .stat-card,
+.metrica-stat, .admin-form-card, .cert-generar-card {
+  border-radius: 20px !important;
+  border: 1px solid #e3efeb;
+  transition: transform .3s ease, box-shadow .3s ease, border-color .3s ease;
+}
+.empresa-card:hover, .reporte-card:hover, .admin-card:hover, .beneficio-card:hover,
+.stat-card:hover, .metrica-stat:hover {
+  transform: translateY(-4px);
+  border-color: var(--gen-acento);
+  box-shadow: 0 16px 36px rgba(47,143,122,.14);
+}
+
+/* ---------- Botones primarios con el acento verde-agua de la referencia ---------- */
+.admin-primary-btn, .perfil-btn, .beneficio-btn, .cert-generar-btn, .cert-imprimir-btn {
+  background: linear-gradient(135deg, var(--gen-acento), var(--gen-acento-oscuro)) !important;
+  color: #fff !important;
+  border-radius: 14px !important;
+  letter-spacing: .01em;
+  box-shadow: 0 8px 20px rgba(47,143,122,.22);
+}
+.admin-primary-btn:hover:not(:disabled), .perfil-btn:hover:not(:disabled),
+.beneficio-btn:hover:not(:disabled), .cert-generar-btn:hover:not(:disabled) {
+  box-shadow: 0 12px 26px rgba(47,143,122,.30);
+  transform: translateY(-2px);
+}
+
+/* ---------- Badges de estado tipo "píldora" ---------- */
+.reporte-badge, .empresa-tipo-badge, .mi-canje-estado, .perfil-rol, .cert-badge-valido {
+  background: #e6f6f2 !important;
+  color: var(--gen-acento-oscuro) !important;
+  border: 1px solid #c5ebe2;
+}
+
+/* ---------- Pasos numerados (estilo de la sección "Paso 1 · Paso 2") ---------- */
+.paso-numero {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 34px; height: 34px; border-radius: 50%;
+  background: var(--gen-acento); color: #fff; font-weight: 800; font-size: 14px;
+}
+
+/* ---------- Reducción de movimiento para accesibilidad ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .dashboard-content *, .reportes-content *, .empresas-content *, .noticias-content *,
+  .metricas-content *, .beneficios-content *, .perfil-container *, .admin-content * {
+    animation: none !important; transition: none !important;
+  }
+}

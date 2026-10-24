@@ -1,6 +1,8 @@
 from flask import Blueprint, request, jsonify
 from app.middleware.auth_middleware import token_requerido, admin_requerido
 from app.services.reporte_service import ReporteService
+from app.utils.esquemas import limpiar_reporte
+from app.utils.seguridad import paginacion_segura
 import logging
 
 
@@ -8,35 +10,34 @@ logger = logging.getLogger(__name__)
 
 reporte_bp = Blueprint('reporte_bp', __name__)
 
+ERROR_INTERNO = {"error": "Ocurrió un error interno. Intenta de nuevo más tarde."}
+
 
 @reporte_bp.route('/reportes', methods=['POST'])
 @token_requerido
 def crear_reporte():
     try:
-        data = request.get_json()
-        usuario = request.usuario
-        campos = ['titulo', 'descripcion', 'localidad', 'categoria', 'latitud', 'longitud']
-        for campo in campos:
-            if campo not in data:
-                return jsonify({"error": f"Campo requerido: {campo}"}), 400
+        campos, error = limpiar_reporte(request.get_json(silent=True))
+        if error:
+            return jsonify({"error": error}), 400
 
+        # El dueño del reporte SIEMPRE sale del token, nunca del cuerpo de la petición.
         respuesta = ReporteService.crear_reporte(
-            data['titulo'], data['descripcion'], data['localidad'],
-            data['categoria'], usuario['id'], data['latitud'], data['longitud']
+            campos['titulo'], campos['descripcion'], campos['localidad'],
+            campos['categoria'], request.usuario['id'], campos['latitud'], campos['longitud']
         )
         if "error" in respuesta:
             return jsonify(respuesta), 400
         return jsonify(respuesta), 201
-    except Exception as e:
+    except Exception:
         logger.exception("Error inesperado en el endpoint")
-        return jsonify({"error": "Ocurrió un error interno. Intenta de nuevo más tarde."}), 500
+        return jsonify(ERROR_INTERNO), 500
 
 
 @reporte_bp.route('/reportes', methods=['GET'])
 @token_requerido
 def obtener_reportes():
-    pagina = int(request.args.get('pagina', 1))
-    limite = int(request.args.get('limite', 20))
+    pagina, limite = paginacion_segura(request.args)
     es_admin = request.usuario.get('rol') == 'admin'
     reportes = ReporteService.obtener_reportes(pagina, limite, es_admin)
     return jsonify(reportes), 200
@@ -46,20 +47,21 @@ def obtener_reportes():
 @token_requerido
 def editar_reporte(id):
     try:
-        data = request.get_json()
+        campos, error = limpiar_reporte(request.get_json(silent=True))
+        if error:
+            return jsonify({"error": error}), 400
         usuario = request.usuario
         respuesta = ReporteService.editar_reporte(
             id, usuario['id'], usuario.get('rol') == 'admin',
-            data['titulo'], data['descripcion'],
-            data['localidad'], data['categoria']
+            campos['titulo'], campos['descripcion'], campos['localidad'], campos['categoria']
         )
         if "error" in respuesta:
             codigo = 403 if respuesta.get("codigo") == "prohibido" else 400
             return jsonify(respuesta), codigo
         return jsonify(respuesta), 200
-    except Exception as e:
+    except Exception:
         logger.exception("Error inesperado en el endpoint")
-        return jsonify({"error": "Ocurrió un error interno. Intenta de nuevo más tarde."}), 500
+        return jsonify(ERROR_INTERNO), 500
 
 
 @reporte_bp.route('/reportes/<int:id>', methods=['DELETE'])
@@ -77,11 +79,11 @@ def eliminar_reporte(id):
 @admin_requerido
 def cambiar_estado(id):
     try:
-        data = request.get_json()
+        data = request.get_json(silent=True) or {}
         respuesta = ReporteService.cambiar_estado(id, data.get('estado', ''))
         if "error" in respuesta:
             return jsonify(respuesta), 400
         return jsonify(respuesta), 200
-    except Exception as e:
+    except Exception:
         logger.exception("Error inesperado en el endpoint")
-        return jsonify({"error": "Ocurrió un error interno. Intenta de nuevo más tarde."}), 500
+        return jsonify(ERROR_INTERNO), 500

@@ -100,3 +100,35 @@ VALUES (
     'scrypt:32768:8:1$OANrnUF4N3TaZOzr$2a48c804d1fb6147f2c776acf9066dafe0a2b0b4e4b7d1925adb6fcf12d45098ba67ddbf58a31c8367e0dc45199f2dd48db8ec829e59f8e02347fdb533e2216a',
     'admin'
 ) ON CONFLICT (correo) DO NOTHING;
+
+
+-- =====================================================================
+-- SEGURIDAD A NIVEL DE FILA (Row-Level Security) — punto 4 y 3 de la lista
+-- Supabase expone por defecto las tablas del esquema "public" mediante una API REST
+-- pública (protegida solo por la "anon key", que es pública). Con RLS activado y SIN
+-- políticas, esa API queda sin acceso a ninguna fila. EcoMapaGo no la usa: el frontend
+-- habla únicamente con nuestro backend Flask, que se conecta con el rol "postgres"
+-- (ese rol ignora RLS), así que la aplicación sigue funcionando igual.
+-- =====================================================================
+ALTER TABLE usuarios                   ENABLE ROW LEVEL SECURITY;
+ALTER TABLE reportes                   ENABLE ROW LEVEL SECURITY;
+ALTER TABLE noticias                   ENABLE ROW LEVEL SECURITY;
+ALTER TABLE empresas_recicladoras      ENABLE ROW LEVEL SECURITY;
+ALTER TABLE beneficios                 ENABLE ROW LEVEL SECURITY;
+ALTER TABLE canjes                     ENABLE ROW LEVEL SECURITY;
+ALTER TABLE certificados               ENABLE ROW LEVEL SECURITY;
+ALTER TABLE restablecimientos_password ENABLE ROW LEVEL SECURITY;
+
+-- Defensa en profundidad: además, se quitan los permisos de los roles públicos de la API
+-- de Supabase (solo si existen; así este script también corre en un PostgreSQL normal).
+DO $$
+DECLARE rol text;
+BEGIN
+  FOREACH rol IN ARRAY ARRAY['anon', 'authenticated'] LOOP
+    IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = rol) THEN
+      EXECUTE format('REVOKE ALL ON ALL TABLES    IN SCHEMA public FROM %I', rol);
+      EXECUTE format('REVOKE ALL ON ALL SEQUENCES IN SCHEMA public FROM %I', rol);
+    END IF;
+  END LOOP;
+END $$;
+

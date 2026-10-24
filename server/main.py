@@ -1,8 +1,9 @@
 from dotenv import load_dotenv
 load_dotenv()  # Debe ser lo primero antes de cualquier import de la app
 
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_cors import CORS
+from werkzeug.middleware.proxy_fix import ProxyFix
 import os
 import logging
 
@@ -24,16 +25,24 @@ logging.basicConfig(
 
 app = Flask(__name__)
 
-# Orígenes permitidos: tu frontend en Render + entorno de desarrollo local.
-# Si tu dominio de Render es distinto al de ejemplo, actualízalo aquí o
-# defínelo en la variable de entorno FRONTEND_URL (Render > Environment).
-app.config['FRONTEND_URL'] = os.getenv("FRONTEND_URL", "https://ecomapago.onrender.com")
+# Render coloca un proxy delante de la app: sin esto, request.remote_addr siempre es 127.0.0.1
+# y el rate limiting trataría a TODOS los usuarios como una sola persona.
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1)
 
-origenes_permitidos = [
-    "http://localhost:5173",
-    app.config['FRONTEND_URL']
-]
-CORS(app, resources={r"/*": {"origins": origenes_permitidos}})
+# Orígenes permitidos: tu frontend en Render + entorno de desarrollo local.
+# FRONTEND_URL admite varias URLs separadas por coma (Render > Environment).
+# La primera es la "principal" (se usa para armar enlaces, p. ej. recuperar contraseña).
+_frontends = [u.strip().rstrip("/") for u in os.getenv("FRONTEND_URL", "https://ecomapago.onrender.com").split(",") if u.strip()]
+app.config['FRONTEND_URL'] = _frontends[0]
+
+origenes_permitidos = ["http://localhost:5173"] + _frontends
+CORS(
+    app,
+    resources={r"/*": {"origins": origenes_permitidos}},
+    allow_headers=["Content-Type", "Authorization"],
+    methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    max_age=600,
+)
 
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 if not app.config['SECRET_KEY']:
@@ -61,6 +70,50 @@ app.config['MAX_CONTENT_LENGTH'] = 4 * 1024 * 1024
 @app.errorhandler(413)
 def imagen_demasiado_grande(e):
     return jsonify({"error": "La imagen es demasiado pesada. Máximo 4MB."}), 413
+
+
+@app.errorhandler(429)
+def demasiadas_peticiones(e):
+    return jsonify({"error": "Demasiadas peticiones. Espera un momento e intenta de nuevo."}), 429
+
+
+@app.errorhandler(Exception)
+def error_no_controlado(e):
+    """Red de seguridad final: cualquier fallo no previsto se registra en el servidor
+    y el cliente solo recibe un mensaje genérico (nunca trazas ni detalles internos)."""
+    from werkzeug.exceptions import HTTPException
+    if isinstance(e, HTTPException):
+        return jsonify({"error": e.description}), e.code
+    logging.getLogger("main").exception("Error no controlado")
+    return jsonify({"error": "Ocurrió un error interno. Intenta de nuevo más tarde."}), 500
+
+
+@app.errorhandler(404)
+def no_encontrado(e):
+    return jsonify({"error": "Recurso no encontrado"}), 404
+
+
+@app.errorhandler(405)
+def metodo_no_permitido(e):
+    return jsonify({"error": "Método no permitido"}), 405
+
+
+@app.after_request
+def cabeceras_de_seguridad(respuesta):
+    """Security headers (punto 18) y refuerzo de HTTPS (punto 19)."""
+    respuesta.headers["X-Content-Type-Options"] = "nosniff"
+    respuesta.headers["X-Frame-Options"] = "DENY"
+    respuesta.headers["Referrer-Policy"] = "no-referrer"
+    respuesta.headers["Permissions-Policy"] = "geolocation=(), camera=(), microphone=()"
+    # Esta API solo devuelve JSON: no debe cargar ni incrustar nada.
+    respuesta.headers["Content-Security-Policy"] = "default-src 'none'; frame-ancestors 'none'"
+    # HSTS: el navegador recordará usar siempre HTTPS con este dominio (1 año).
+    if request.is_secure:
+        respuesta.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+    # Las respuestas de la API (datos de usuario) no deben guardarse en cachés compartidas.
+    if request.method == "GET" and request.path != "/":
+        respuesta.headers["Cache-Control"] = "no-store"
+    return respuesta
 
 app.register_blueprint(usuario_bp)
 app.register_blueprint(protegido_bp)

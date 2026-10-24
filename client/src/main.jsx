@@ -6,6 +6,8 @@ import ReactDOM from 'react-dom/client'
 import App from './App'
 
 import './styles/global.css'
+import './styles/tema.css'
+import './styles/estilo-genesys.css'
 
 ReactDOM.createRoot(
   document.getElementById('root')

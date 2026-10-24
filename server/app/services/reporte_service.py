@@ -37,17 +37,15 @@ class ReporteService:
             offset = (pagina - 1) * limite
             cursor = conexion.cursor()
 
-            filtro_estado = "" if es_admin else "WHERE r.estado = 'aprobado'"
-
             cursor.execute(
-                f"""SELECT r.id, r.titulo, r.descripcion, r.localidad, r.categoria,
+                """SELECT r.id, r.titulo, r.descripcion, r.localidad, r.categoria,
                           r.estado, r.fecha_creacion, u.nombre, r.latitud, r.longitud, r.usuario_id
                    FROM reportes r
                    INNER JOIN usuarios u ON r.usuario_id = u.id
-                   {filtro_estado}
+                   WHERE (%s OR r.estado = 'aprobado')
                    ORDER BY r.fecha_creacion DESC
                    LIMIT %s OFFSET %s""",
-                (limite, offset)
+                (bool(es_admin), limite, offset)
             )
             reportes = cursor.fetchall()
             cursor.close()

@@ -5,18 +5,25 @@ venv/
 # Python
 __pycache__/
 *.pyc
+.pytest_cache/
 
-# Variables de entorno
+# Variables de entorno y secretos (NUNCA subir a Git)
 .env
+.env.*
+!.env.example
+*.pem
+*.key
 
 # Node
 node_modules/
 
-# Vite
+# Vite / builds
 dist/
 
-# VSCode
+# Editores y sistema
 .vscode/
+.idea/
+.DS_Store
 
 # Logs
 *.log

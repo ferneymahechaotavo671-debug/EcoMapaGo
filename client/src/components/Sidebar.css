@@ -174,3 +174,61 @@
         flex-shrink: 0;
     }
 }
+
+/* ===== Pulido visual del menú (sin cambios de estructura) ===== */
+.sidebar-logo {
+    padding: 22px 20px 20px;
+    font-size: 18px;
+    letter-spacing: -.01em;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+}
+.sidebar-nav {
+    padding: 14px 10px;
+}
+.sidebar-link {
+    margin: 2px 0;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: rgba(255,255,255,.78);
+    border-left: 3px solid transparent;
+}
+.sidebar-link:hover {
+    background: rgba(255,255,255,.07);
+    color: #fff;
+}
+.sidebar-link.active {
+    background: rgba(255,255,255,.12);
+    color: #fff;
+    border-left-color: #74c69d;
+    font-weight: 600;
+}
+.sidebar-divider {
+    margin: 14px 14px 6px;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,.45);
+}
+.sidebar-footer {
+    border-top: 1px solid rgba(255,255,255,.1);
+    padding: 14px;
+}
+.sidebar-user {
+    font-size: 12.5px;
+    color: rgba(255,255,255,.7);
+}
+.logout-btn {
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 13px;
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.15);
+    transition: background .18s, border-color .18s;
+}
+.logout-btn:hover {
+    background: rgba(185,28,28,.35);
+    border-color: rgba(185,28,28,.5);
+}
