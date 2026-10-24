@@ -1,0 +1,69 @@
+/* Pie de página común. Se muestra en todas las pantallas excepto el login y el mapa. */
+.app-footer {
+    background: var(--blanco, #fff);
+    border-top: 1px solid var(--borde, #e2e8f0);
+    color: var(--texto-2, #475569);
+    font-family: var(--fuente, 'Segoe UI', system-ui, sans-serif);
+    font-size: 13px;
+    margin-top: auto;
+}
+
+/* Cuando hay menú lateral fijo (230px), el pie se alinea con el contenido */
+.app-footer.app-footer-con-menu {
+    margin-left: 230px;
+}
+
+.app-footer-contenido {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 14px 28px;
+    padding: 22px 36px;
+}
+
+.app-footer-marca p {
+    margin: 4px 0 0;
+    font-size: 12.5px;
+    color: var(--texto-3, #94a3b8);
+}
+
+.app-footer-logo {
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--verde-900, #1b4332);
+}
+
+.app-footer-info {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 16px;
+    text-align: right;
+}
+
+.app-footer-seguridad {
+    background: var(--verde-50, #f0faf3);
+    color: var(--verde-700, #2d6a4f);
+    font-weight: 600;
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    border: 1px solid #bbe5cb;
+    white-space: nowrap;
+}
+
+.app-footer-legal {
+    border-top: 1px solid var(--borde, #e2e8f0);
+    padding: 12px 36px;
+    font-size: 12px;
+    color: var(--texto-3, #94a3b8);
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+    .app-footer.app-footer-con-menu { margin-left: 0; }
+    .app-footer-contenido { padding: 20px; flex-direction: column; align-items: flex-start; }
+    .app-footer-info { text-align: left; }
+    .app-footer-legal { padding: 12px 20px; }
+}

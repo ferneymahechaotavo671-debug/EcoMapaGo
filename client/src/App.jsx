@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom"
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom"
 
 import Login from "./pages/Login"
 import Dashboard from "./pages/Dashboard"
@@ -21,10 +21,31 @@ import Registro from "./pages/Registro"
 import RecuperarPassword from "./pages/RecuperarPassword"
 import RestablecerPassword from "./pages/RestablecerPassword"
 import ProtectedRoute from "./components/ProtectedRoute"
+import Footer from "./components/Footer"
+
+// Rutas sin pie de página: el login y la pantalla del mapa (Inicio).
+const RUTAS_SIN_PIE = ["/", "/dashboard"]
+
+// Rutas públicas que NO llevan menú lateral (el pie se centra en vez de alinearse al contenido).
+const RUTAS_SIN_MENU = ["/registro", "/recuperar-password", "/restablecer-password"]
+
+function Diseno({ children }) {
+    const { pathname } = useLocation()
+    const mostrarPie = !RUTAS_SIN_PIE.includes(pathname)
+    const conMenu = !RUTAS_SIN_MENU.includes(pathname) && !pathname.startsWith("/verificar/")
+
+    return (
+        <>
+            {children}
+            {mostrarPie && <Footer conMenu={conMenu} />}
+        </>
+    )
+}
 
 function App() {
     return (
         <BrowserRouter>
+            <Diseno>
             <Routes>
                 {/* Públicas */}
                 <Route path="/" element={<Login />} />
@@ -52,6 +73,7 @@ function App() {
                 <Route path="/admin/beneficios" element={<ProtectedRoute soloAdmin><AdminBeneficios /></ProtectedRoute>} />
                 <Route path="/admin/canjes" element={<ProtectedRoute soloAdmin><AdminCanjes /></ProtectedRoute>} />
             </Routes>
+            </Diseno>
         </BrowserRouter>
     )
 }
